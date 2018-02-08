@@ -53,6 +53,7 @@ if command=="s"#先手側の処理
         puts "#{input}と送信しました。"
         # 送信が終わったらソケットを閉じる
          sock.close
+         input="No_data"
       end
     end
         }
@@ -60,14 +61,15 @@ if command=="s"#先手側の処理
 
 loop do
       #こちらのループ処理で入力待ちを行う。
-      input="AoyamaGakuin"
-      puts input
+      #input="AoyamaGakuin"
+      #puts input
       #input=gets.to_s.chomp
-      sleep(3)
-      input="Meiji University"
-      puts input
-      sleep(3)
+      #sleep(3)
+      #input="Meiji University"
+      #puts input
+      #sleep(3)
       #t1.join
+      input=gets.to_s.chomp
     end
 
 elsif command=="c"#後手側の処理
@@ -79,7 +81,7 @@ elsif command=="c"#後手側の処理
           sleep(1)
 
          puts"送信側です。"
-         puts "二つ目のスレッドのinputの値は#{input}です。"  #ここでinputの値を読み取っていない。
+         puts "二つ目のスレッドのinputの値は#{input}です。"
         # 127.0.0.1(localhost)の20000番へ接続
         sock = TCPSocket.open("localhost",20000)
         #input="British"
@@ -93,8 +95,11 @@ elsif command=="c"#後手側の処理
         puts "#{input}と送信しました。"
         # 送信が終わったらソケットを閉じる
          sock.close
+         input="No_data"
       end
        puts"受信側です。"
+
+
 
         s0 = TCPServer.open(20000)
         # クライアントからの接続を受け付ける
@@ -126,13 +131,14 @@ elsif command=="c"#後手側の処理
 
      loop do
       #こちらのループ処理で入力待ちを行う。
-      input="Chuo University"
-      puts input
-      sleep(3)
-      input="Hosei University"
-      puts input
-      sleep(3)
+      #input="Chuo University"
+      #puts input
+      #sleep(3)
+      #input="Hosei University"
+      #puts input
+      #sleep(3)
       #t1.join
+      input=gets.to_s.chomp
     end
 
 
