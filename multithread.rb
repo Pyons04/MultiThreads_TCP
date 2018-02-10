@@ -126,9 +126,6 @@ elsif command=="c"#後手側の処理
     end
         }
 
-
-
-
      loop do
       #こちらのループ処理で入力待ちを行う。
       #input="Chuo University"
