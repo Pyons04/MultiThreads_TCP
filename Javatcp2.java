@@ -7,14 +7,14 @@ import java.lang.*;
 import java.io.*;
 import java.net.*;
 
-public class Javatcp implements ActionListener{
+public class Javatcp2 implements ActionListener{
 
         JLabel lab;
         JTextField t;
         static int p=10;
-   public Javatcp(){
+   public Javatcp2(){
      
-        JFrame frame=new JFrame("Text1"); //上部のタイトル
+        JFrame frame=new JFrame("受信側"); //上部のタイトル
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//閉じるボタンを押すとプログラムを自動で終了する。
         frame.setSize(400,400);
         Container contentPane=frame.getContentPane();//必要ない
@@ -42,8 +42,8 @@ public class Javatcp implements ActionListener{
 
 
     public static void main (String [] args){
-    Javatcp s1=new Javatcp();
-    MultiThread mt = new MultiThread();
+    Javatcp2 s1=new Javatcp2();
+    MultiThread2 mt = new MultiThread2();
     Thread thread = new Thread(mt);
     thread.start();
     }
@@ -51,19 +51,51 @@ public class Javatcp implements ActionListener{
 }
 
 
-class MultiThread implements Runnable {
+class MultiThread2 implements Runnable {
     public void run() {
-        for (int i = 0; i < 100; i++) {
-            try {
-                Thread.sleep(1000);
-                System.out.println("スレッド2の" + (i + 1) + "度目の処理");
-                System.out.println("GUIのスレッドではpの値は"+Javatcp.p+"を示している");
-            }
+             try{
 
-                        catch (InterruptedException e) {
-                System.out.println("例外処理が実施された。");
-                e.printStackTrace();
-            }
-        }
+    InputStreamReader i =
+          new InputStreamReader(System.in);
+      
+System.out.print("Client側の設定を行います。");
+System.out.print("hostを設定します:");
+       BufferedReader b=
+          new BufferedReader(i);
+       String host = b.readLine();
+       System.out.println(host);
+
+System.out.print("portを設定します:");
+
+       BufferedReader a=
+          new BufferedReader(i);
+       String port = a.readLine();
+       int port_int = Integer.parseInt(port);
+       System.out.println(port);
+    
+
+while(true){
+     try{
+    Socket mysocket = new Socket(host,port_int);//相手のIPアドレス,書かなくてもよい（クライアント側のみ）
+        BufferedReader in = new BufferedReader(new InputStreamReader(mysocket.getInputStream()));//inはサーバーから受信するためのメソッド
+
+System.out.print("受信したメッセージ:");
+    while(!in.ready()){}
+    System.out.println(in.readLine());
+    System.out.print("\n");
+    in.close();
+   
+     }
+catch(Exception e){
+    System.out.print("待機中\n");
+    }
+}
+
+
+
+
+}catch(IOException a){
+      System.out.println("例外処理、入力エラー");
+     }
     }
 }
