@@ -11,6 +11,8 @@ public class Javatcp1 implements ActionListener{
 
         JLabel lab,lab2;
         JTextField t;
+        static JTextArea textarea;
+
         static String p="No_data";
         static String recieve="No_data";
    public Javatcp1(){
@@ -24,15 +26,21 @@ public class Javatcp1 implements ActionListener{
         panel.setBackground(Color.GREEN);
         contentPane.add(panel);//Paneにpanelを追加
 
+        String message="";
+        JTextArea textarea = new JTextArea(message);//デフォルト文字
+        //int height = textarea.getMaximumSize().height;
+        textarea.setPreferredSize(new Dimension(300, 300));
+
         t = new JTextField("10",15);
         t.addActionListener(this);//TextFiledにアクションリスナー
-        lab=new JLabel("入力されている文字:");
+        lab=new JLabel("送信される文字:");
         lab2=new JLabel("受信した文字:");
         panel.setLayout(new FlowLayout());
         
         panel.add(t);
         panel.add(lab);
         panel.add(lab2);
+        panel.add(textarea);
 
         frame.setVisible(true);//windowを見せるor見せない。一番最後が良い（必須）
     }
@@ -41,7 +49,7 @@ public class Javatcp1 implements ActionListener{
             String x=t.getText();
             //int x=Integer.parseInt(t.getText());//文字でも数字に変換してくれるInterger.parsint
             lab.setText("入力されている文字:"+x);
-            lab.setText("受信した文字:"+recieve);
+            lab2.setText("受信した文字:"+recieve);
             p=x;
             t.setText("");
 }
@@ -88,7 +96,6 @@ System.out.print("portを設定します:");
         //送信を担う処理
         ServerSocket srvr=new ServerSocket(port_int);
         Socket skt=srvr.accept();//接続するまでここで止まる
-        System.out.print("送信するメッセージを入力してください。");
         PrintWriter out=new PrintWriter(skt.getOutputStream(),true);//メッセージを送信
         System.out.print("送信されたメッセージは"+Javatcp1.p+"です\n");
         out.print(Javatcp1.p);
@@ -108,24 +115,18 @@ try{
 }
 
 //受信を担う処理
-Socket mysocket = new Socket(host,port_int);//相手のIPアドレス,書かなくてもよい（クライアント側のみ）
+        Socket mysocket = new Socket(host,port_int);//相手のIPアドレス,書かなくてもよい（クライアント側のみ）
         BufferedReader in = new BufferedReader(new InputStreamReader(mysocket.getInputStream()));//inはサーバーから受信するためのメソッド
 
-    while(!in.ready()){}
-        System.out.print("受信したメッセージ:"+in.readLine()); //ここはちゃんと表示できている。
+    //System.out.print("受信したメッセージ:"+in.readLine()+"\n"); //ここはちゃんと表示できている。
     //System.out.println(in.readLine());
-    System.out.print("\n");
-    String checker="";
+   String new_message=in.readLine();
+   //System.out.println(new_message+"\n");
 
-    Javatcp1.recieve=in.readLine();  //代入がうまくいっていない。
-    checker=in.readLine();
-
-      //代入がうまくいっていない。
-    if(checker!="No_data"){
-      System.out.print("No_data以外の文字を受信しています。\n");
-      Javatcp1.recieve=in.readLine();
-      System.out.println("クラス変数recieveは次の値を示しています。"+Javatcp1.recieve);
-      System.out.println("checkerは次の値を示しています。"+checker);
+    if(new_message!="No_data"){
+      System.out.println("受信したメッセージ:"+new_message);
+      Javatcp1.recieve=new_message;
+      Javatcp1.textarea.append("INCOMING:"+new_message+"\n");//これができない！
     }
     in.close();
 
