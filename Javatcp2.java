@@ -12,7 +12,7 @@ public class Javatcp2 implements ActionListener{
         JLabel lab;
         JTextField t;
         //static int p=10;
-        static String p="No_data";
+        static String p="HelloWordl";
    public Javatcp2(){
      
         JFrame frame=new JFrame("受信先行"); //上部のタイトル
@@ -40,6 +40,7 @@ public class Javatcp2 implements ActionListener{
             //int x=Integer.parseInt(t.getText());//文字でも数字に変換してくれるInterger.parsint
             lab.setText("入力されている文字:"+x);
             p=x;
+            t.setText("");
 }
 
 
@@ -104,6 +105,10 @@ System.out.print("受信したメッセージ:");
         skt.close();
         srvr.close();
 
+
+           if(Javatcp2.p!="No_data"){
+                   Javatcp2.p="HelloWorld";
+           }
    
      }
 
