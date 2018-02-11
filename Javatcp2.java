@@ -11,10 +11,11 @@ public class Javatcp2 implements ActionListener{
 
         JLabel lab;
         JTextField t;
-        static int p=10;
+        //static int p=10;
+        static String p="No_data";
    public Javatcp2(){
      
-        JFrame frame=new JFrame("受信側"); //上部のタイトル
+        JFrame frame=new JFrame("受信先行"); //上部のタイトル
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//閉じるボタンを押すとプログラムを自動で終了する。
         frame.setSize(400,400);
         Container contentPane=frame.getContentPane();//必要ない
@@ -25,7 +26,7 @@ public class Javatcp2 implements ActionListener{
 
         t = new JTextField("10",15);
         t.addActionListener(this);//TextFiledにアクションリスナー
-        lab=new JLabel("*2=");
+        lab=new JLabel("入力されている文字:");
         panel.setLayout(new FlowLayout());
         
         panel.add(t);
@@ -35,8 +36,9 @@ public class Javatcp2 implements ActionListener{
     }
 
         public void actionPerformed(ActionEvent event){
-            int x=Integer.parseInt(t.getText());//文字でも数字に変換してくれるInterger.parsint
-            lab.setText("*2="+(x*2));
+            String x=t.getText();
+            //int x=Integer.parseInt(t.getText());//文字でも数字に変換してくれるInterger.parsint
+            lab.setText("入力されている文字:"+x);
             p=x;
 }
 
@@ -58,7 +60,7 @@ class MultiThread2 implements Runnable {
     InputStreamReader i =
           new InputStreamReader(System.in);
       
-System.out.print("Client側の設定を行います。");
+System.out.print("受信先行側の設定を行います。");
 System.out.print("hostを設定します:");
        BufferedReader b=
           new BufferedReader(i);
@@ -76,6 +78,8 @@ System.out.print("portを設定します:");
 
 while(true){
      try{
+
+        //受信を担う処理。
     Socket mysocket = new Socket(host,port_int);//相手のIPアドレス,書かなくてもよい（クライアント側のみ）
         BufferedReader in = new BufferedReader(new InputStreamReader(mysocket.getInputStream()));//inはサーバーから受信するためのメソッド
 
@@ -84,8 +88,26 @@ System.out.print("受信したメッセージ:");
     System.out.println(in.readLine());
     System.out.print("\n");
     in.close();
+
+    try{
+  Thread.sleep(3000);
+}catch (InterruptedException e){
+}
+//送信を担う処理
+        ServerSocket srvr=new ServerSocket(port_int);
+        Socket skt=srvr.accept();//接続するまでここで止まる
+        System.out.print("送信するメッセージを入力してください。");
+        PrintWriter out=new PrintWriter(skt.getOutputStream(),true);//メッセージを送信
+        System.out.print("送信されたメッセージは"+Javatcp2.p+"です\n");
+        out.print(Javatcp2.p);
+        out.close();
+        skt.close();
+        srvr.close();
+
    
      }
+
+
 catch(Exception e){
     System.out.print("待機中\n");
     }
