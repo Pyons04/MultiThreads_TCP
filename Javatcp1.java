@@ -7,6 +7,19 @@ import java.lang.*;
 import java.io.*;
 import java.net.*;
 
+import java.awt.EventQueue;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.Calendar;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+import javax.swing.SpringLayout;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+
 public class Javatcp1 implements ActionListener{
 
         JLabel lab,lab2;
@@ -28,7 +41,6 @@ public class Javatcp1 implements ActionListener{
 
         String message="";
         JTextArea textarea = new JTextArea(message);//デフォルト文字
-        //int height = textarea.getMaximumSize().height;
         textarea.setPreferredSize(new Dimension(300, 300));
 
         t = new JTextField("10",15);
@@ -58,8 +70,12 @@ public class Javatcp1 implements ActionListener{
     public static void main (String [] args){
     Javatcp1 s1=new Javatcp1();
     MultiThread1 mt = new MultiThread1();
+    MultiThread3 lt = new MultiThread3();
     Thread thread = new Thread(mt);
+    Thread thread2 = new Thread(lt);
     thread.start();
+    thread2.start();
+    Javatcp1.textarea.append("HelloWorld\n");  //staicでなくしてみる
     }
 
 }
@@ -126,7 +142,6 @@ try{
     if(new_message!="No_data"){
       System.out.println("受信したメッセージ:"+new_message);
       Javatcp1.recieve=new_message;
-      Javatcp1.textarea.append("INCOMING:"+new_message+"\n");//これができない！
     }
     in.close();
 
@@ -142,3 +157,26 @@ catch(Exception e){
      }
     }
 }
+
+
+class MultiThread3 implements Runnable {
+    public void run() {
+while(true){
+try{
+  Thread.sleep(3000);
+}catch (InterruptedException e){
+}
+System.out.print("3つ目のスレッド作動中\nJavatcp1.recieveの値は"+Javatcp1.recieve);
+
+
+ SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        if(Javatcp1.recieve!="No_data"){
+       Javatcp1.textarea.append("INCOMING:"+Javatcp1.recieve+"\n");
+       }
+      }
+     });
+}
+
+                    }
+                                       }
