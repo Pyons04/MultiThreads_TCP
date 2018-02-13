@@ -24,7 +24,7 @@ public class Javatcp1 implements ActionListener{
 
         JLabel lab,lab2;
         JTextField t;
-        static JTextArea textarea;
+        JTextArea textarea;
 
         static String p="No_data";
         static String recieve="No_data";
@@ -54,7 +54,30 @@ public class Javatcp1 implements ActionListener{
         panel.add(lab2);
         panel.add(textarea);
 
-        frame.setVisible(true);//windowを見せるor見せない。一番最後が良い（必須）
+        frame.setVisible(true);
+      //windowを見せるor見せない。一番最後が良い（必須）
+
+//３つ目のスレッドを移植する作戦。ここから
+Thread thread = new Thread(){
+   @Override
+   public void run() {
+    //無限ループ
+    while(true){
+                SwingUtilities.invokeLater(new Runnable() {
+                  public void run() {
+                     while(recieve!="No_data"){
+                     textarea.append("INCOMING:"+recieve+"\n");
+                              }
+                                   }
+                                                       });
+               }
+                     }
+                            };
+
+ thread.start();
+
+//3つ目のスレッドを移植する作戦。ここまで
+
     }
 
         public void actionPerformed(ActionEvent event){
@@ -68,14 +91,17 @@ public class Javatcp1 implements ActionListener{
 
 
     public static void main (String [] args){
-    Javatcp1 s1=new Javatcp1();
+        EventQueue.invokeLater(new Runnable() {
+            public void run(){
+    Javatcp1 s1=new Javatcp1();  //GUIを表示させている。
     MultiThread1 mt = new MultiThread1();
     MultiThread3 lt = new MultiThread3();
-    Thread thread = new Thread(mt);
-    Thread thread2 = new Thread(lt);
-    thread.start();
-    thread2.start();
-    Javatcp1.textarea.append("HelloWorld\n");  //staicでなくしてみる
+    Thread thread5 = new Thread(mt);
+    Thread thread3 = new Thread(lt);
+    thread5.start();
+    //thread3.start();//staicでなくしてみる
+}
+      });
     }
 
 }
@@ -158,25 +184,32 @@ catch(Exception e){
     }
 }
 
+//ここから
 
-class MultiThread3 implements Runnable {
-    public void run() {
-while(true){
-try{
-  Thread.sleep(3000);
-}catch (InterruptedException e){
-}
-System.out.print("3つ目のスレッド作動中\nJavatcp1.recieveの値は"+Javatcp1.recieve);
+//class MultiThread3 implements Runnable {
+//    public void run() {
+//while(true){
+//try{
+//  Thread.sleep(3000);
+//}catch (InterruptedException e){
+//}
+//System.out.print("3つ目のスレッド作動中\nJavatcp1.recieveの値は"+Javatcp1.recieve);
+
+//String str = Javatcp1.textarea.getText();
+//System.out.print("テキストエリアに入力されている文字は"+str);
+
+ //SwingUtilities.invokeLater(new Runnable() {
+   //   public void run() {
+     //   while(Javatcp1.recieve!="No_data"){
+       //Javatcp1.textarea.append("INCOMING:"+Javatcp1.recieve+"\n");
+       //}
+      //}
+     //});
+//}
+
+                   // }
+                     //                  }
+
+//ここまで  
 
 
- SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        if(Javatcp1.recieve!="No_data"){
-       Javatcp1.textarea.append("INCOMING:"+Javatcp1.recieve+"\n");
-       }
-      }
-     });
-}
-
-                    }
-                                       }
