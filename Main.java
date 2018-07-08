@@ -20,10 +20,12 @@ import javax.swing.SpringLayout;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-public class Main extends JFrame {
+public class Javatcp extends JFrame {
 
    JPanel panel;
    JTextArea textarea;
+   static String p="No_data";
+        static String recieve="No_data";
   
 
  public static void main(String[] args) {
@@ -42,7 +44,7 @@ public class Main extends JFrame {
   });
  }
 
- public Main() {
+ public Javatcp() {
   JFrame frame=new JFrame("マルチスレッドでGUIに反映させるためのテスト。"); //上部のタイトル
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//閉じるボタンを押すとプログラムを自動で終了する。
         frame.setSize(400,400);

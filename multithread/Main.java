@@ -20,24 +20,42 @@ import javax.swing.SpringLayout;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-public class Javatcp1 implements ActionListener{
+public class Main extends JFrame implements ActionListener{
 
-        JLabel lab,lab2;
-        JTextField t;
-        static JTextArea textarea;
+   JPanel panel;
+   static JTextArea textarea;
+   JLabel lab,lab2;
 
-        static String p="No_data";
-        static String recieve="No_data";
-   public Javatcp1(){
-     
-        JFrame frame=new JFrame("送信先行"); //上部のタイトル
+   static String p="No_data";
+   static String recieve="No_data";
+   JTextField t;
+
+ public static void main(String[] args) {
+  EventQueue.invokeLater(new Runnable() {
+   public void run() {
+    //try {
+     Main frame = new Main();
+     frame.setVisible(true);
+     MultiThread1 mt = new MultiThread1();
+     Thread thread5 = new Thread(mt);
+     thread5.start();
+    //} catch (Exception e) {
+     //e.printStackTrace();
+    //}
+   }
+  });
+ }
+
+
+ public Main() {
+  JFrame frame=new JFrame("マルチスレッドでGUIに反映させるためのテスト。"); //上部のタイトル
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//閉じるボタンを押すとプログラムを自動で終了する。
         frame.setSize(400,400);
         Container contentPane=frame.getContentPane();//必要ない
         JPanel panel=new JPanel();//新しいパネルオブジェクト
         panel.setLayout(new FlowLayout());//Layoutの設定（部品の乗せ方の設定、上下左右）
         panel.setBackground(Color.GREEN);
-        contentPane.add(panel);//Paneにpanelを追加
+        contentPane.add(panel);
 
         String message="";
         JTextArea textarea = new JTextArea(message);//デフォルト文字
@@ -48,17 +66,40 @@ public class Javatcp1 implements ActionListener{
         lab=new JLabel("送信される文字:");
         lab2=new JLabel("受信した文字:");
         panel.setLayout(new FlowLayout());
-        
+
         panel.add(t);
         panel.add(lab);
         panel.add(lab2);
+
         panel.add(textarea);
+        frame.setVisible(true);
 
-        frame.setVisible(true);//windowを見せるor見せない。一番最後が良い（必須）
+  //新しいスレッドの中で無限ループ
+  Thread thread = new Thread(){
+   //@Override
+   public void run() {
+    //無限ループ
+    while(true){
 
+     //イベントディスパッチスレッドでUIを更新
+     SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        try{
+  Thread.sleep(3000);
+}catch (InterruptedException e){
+}
+        if(recieve!="No_data"){
+       textarea.append("INCOMING:"+recieve+"\n");
+     }
+      }
+     });
     }
+   }
+  };
+  thread.start();
+ }
+   public void actionPerformed(ActionEvent event){
 
-        public void actionPerformed(ActionEvent event){
             String x=t.getText();
             //int x=Integer.parseInt(t.getText());//文字でも数字に変換してくれるInterger.parsint
             lab.setText("入力されている文字:"+x);
@@ -66,30 +107,15 @@ public class Javatcp1 implements ActionListener{
             p=x;
             t.setText("");
 }
-
-
-    public static void main (String [] args){
-        EventQueue.invokeLater(new Runnable() {
-            public void run(){
-    Javatcp1 s1=new Javatcp1();  //GUIを表示させている。
-    MultiThread1 mt = new MultiThread1();
-    MultiThread3 lt = new MultiThread3();
-    Thread thread5 = new Thread(mt);
-    Thread thread3 = new Thread(lt);
-    thread5.start();
-    //thread3.start();//staicでなくしてみる
 }
-      });
-    }
 
-}
 
 
 class MultiThread1 implements Runnable {
     public void run() {
-        try{
-
-    InputStreamReader c =
+      try{
+//接続設定・通信ループ
+InputStreamReader c =
           new InputStreamReader(System.in);
 System.out.print("送信先行側の設定を行います。");
 System.out.print("portを設定します:");
@@ -117,14 +143,14 @@ System.out.print("portを設定します:");
         ServerSocket srvr=new ServerSocket(port_int);
         Socket skt=srvr.accept();//接続するまでここで止まる
         PrintWriter out=new PrintWriter(skt.getOutputStream(),true);//メッセージを送信
-        System.out.print("送信されたメッセージは"+Javatcp1.p+"です\n");
-        out.print(Javatcp1.p);
+        System.out.print("送信されたメッセージは"+Main.p+"です\n");
+        out.print(Main.p);
         out.close();
         skt.close();
         srvr.close();
 
-        if(Javatcp1.p!="No_data"){
-            Javatcp1.p="No_data";
+        if(Main.p!="No_data"){
+            Main.p="No_data";
         }
 
 
@@ -145,7 +171,7 @@ try{
 
     if(new_message!="No_data"){
       System.out.println("受信したメッセージ:"+new_message);
-      Javatcp1.recieve=new_message;
+      Main.recieve=new_message;
     }
     in.close();
 
@@ -155,41 +181,10 @@ catch(Exception e){
     System.out.print("エラーが発生しています\n");
     }
   }
-
-}catch(IOException a){
+//接続設定接続設定・通信ループ
+    }
+     catch(Exception a){
       System.out.println("例外処理、入力エラー");
      }
     }
 }
-
-//ここから
-
-// class MultiThread3 implements Runnable {
-//     public void run() {
-// while(true){
-
-// try{
-//   Thread.sleep(3000);
-//   }
-// catch (InterruptedException e){
-// }
-
-// System.out.print("3つ目のスレッド作動中\nJavatcp1.recieveの値は"+Javatcp1.recieve);
-
-// String str = Javatcp1.textarea.getText();
-// System.out.print("テキストエリアに入力されている文字は"+str);
-
-//  SwingUtilities.invokeLater(new Runnable() {
-//       public void run() {
-//         while(Javatcp1.recieve!="No_data"){
-//        Javatcp1.textarea.append("INCOMING:"+Javatcp1.recieve+"\n");
-//        }
-//       }
-//      });
-// }
-
-//                     }
-//                                        }
-
-//ここまで  このスレッド全く動作しておらず。
-
