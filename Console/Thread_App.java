@@ -3,9 +3,11 @@ import java.io.*;
 import java.net.*;
 
 class SendFirst extends Thread{
-	private String host;
-	private int port_int;
-  private boolean ahead;
+	String host;
+	int port_int;
+  boolean ahead;
+  String data1 = "ずんずん";
+  String data2 = "どこどこ";
 
 	public SendFirst(String h,int p,boolean a){
 		host      = h;
@@ -17,33 +19,35 @@ class SendFirst extends Thread{
    if(ahead == true){
           while(true){
                    try{
-                        ServerSocket server = new ServerSocket(port_int);
-                        Socket socket = server.accept();//接続するまでここで止まる
-                        PrintWriter out = new PrintWriter(socket.getOutputStream(),true);//メッセージを送信
-                        System.out.print("送信されたメッセージはHelloです\n");
-                        out.print("Good Bay");
+                        System.out.print("[送信先行:]サーバーとクライアントの接続を待機しています\n");
+                        ServerSocket srvr=new ServerSocket(port_int);
+                        Socket skt=srvr.accept();//接続するまでここで止まる
+                        System.out.print("[送信先行:]サーバーとクライアントの接続を構築しました\n");
+                        PrintWriter out=new PrintWriter(skt.getOutputStream(),true);//メッセージを送信
+                        System.out.print("[送信先行:]送信されたメッセージは"+data1+"です\n");
+                        out.print(data1);
                         out.close();
-                        socket.close();
-                        server.close();
-                        Thread.sleep(3000);
+                        skt.close();
+                        srvr.close();
                       }
 
                     catch(Exception e){
-                        System.out.print("送信用tryで例外が発生しています。\n");
+                        System.out.print("[送信先行:]受信用tryで例外が発生しています。\n");
                       }
 
                      try{
-                      //相手のIPアドレス,書かなくてもよい（クライアント側のみ）
-                          Socket mysocket = new Socket(host,port_int);
-                          BufferedReader in = new BufferedReader(new InputStreamReader(mysocket.getInputStream()));
-                          String new_message = in.readLine();
-                          System.out.print("受信したメッセージは"+ new_message + "です\n");
+                          Socket mysocket = new Socket(host,port_int);//相手のIPアドレス,書かなくてもよい（クライアント側のみ）
+                          BufferedReader in = new BufferedReader(new InputStreamReader(mysocket.getInputStream()));//inはサーバーから受信するためのメソッド
+
+                          System.out.print("[送信先行:]受信したメッセージ:");
+                          while(!in.ready()){}
+                          System.out.println(in.readLine());
+                          System.out.print("\n");
                           in.close();
-                          Thread.sleep(3000);
                         }
 
                    catch(Exception e){
-                        System.out.print("受信用tryで例外が発生しています。\n");
+                        System.out.print("[送信先行:]受信用tryで例外が発生しています。\n");
                         }
 
 	                   }
@@ -52,33 +56,35 @@ class SendFirst extends Thread{
    else{
           while(true){
                      try{
-                      //相手のIPアドレス,書かなくてもよい（クライアント側のみ）
-                          Socket mysocket = new Socket(host,port_int);
-                          BufferedReader in = new BufferedReader(new InputStreamReader(mysocket.getInputStream()));
-                          String new_message = in.readLine();
-                          System.out.print("受信したメッセージは"+ new_message + "です\n");
-                          in.close();
-                          Thread.sleep(3000);
+                          Socket mysocket = new Socket(host,port_int);//相手のIPアドレス,書かなくてもよい（クライアント側のみ）
+                          BufferedReader in = new BufferedReader(new InputStreamReader(mysocket.getInputStream()));//inはサーバーから受信するためのメソッド
+
+                         System.out.print("[受信先行:]受信したメッセージ:");
+                         while(!in.ready()){}
+                         System.out.println(in.readLine());
+                         System.out.print("\n");
+                         in.close();
                         }
 
                    catch(Exception e){
-                        System.out.print("受信用tryで例外が発生しています。\n");
+                        System.out.print("[受信先行:]受信用tryで例外が発生しています。\n");
                         }
 
                    try{
-                        ServerSocket server = new ServerSocket(port_int);
-                        Socket socket = server.accept();//接続するまでここで止まる
-                        PrintWriter out = new PrintWriter(socket.getOutputStream(),true);//メッセージを送信
-                        System.out.print("送信されたメッセージはHelloです\n");
-                        out.print("Good Bay");
+                        System.out.print("[受信先行:]サーバーとクライアントの接続を待機しています\n");
+                        ServerSocket srvr=new ServerSocket(port_int);
+                        Socket skt=srvr.accept();//接続するまでここで止まる
+                        System.out.print("[受信先行:]サーバーとクライアントの接続を構築しました\n");
+                        PrintWriter out=new PrintWriter(skt.getOutputStream(),true);//メッセージを送信
+                        System.out.print("[受信先行:]送信されたメッセージは"+data2+"です\n");
+                        out.print(data2);
                         out.close();
-                        socket.close();
-                        server.close();
-                        Thread.sleep(3000);
+                        skt.close();
+                        srvr.close();
                       }
 
                     catch(Exception e){
-                        System.out.print("送信用tryで例外が発生しています。\n");
+                        System.out.print("[受信先行:]送信用tryで例外が発生しています。\n");
                       }
 
                      }
@@ -95,17 +101,25 @@ public class Thread_App {
     boolean ahead;
 
    try{
-       System.out.println("送信先行なら1を受信先行なら0を入力してください。\n");
        InputStreamReader ahead_input = new InputStreamReader(System.in);
+       System.out.print("送信先行ならAを受信先行ならBを入力してください。");
        BufferedReader reader_ahead = new BufferedReader(ahead_input);
        String ahead_str = reader_ahead.readLine();
 
-       if(ahead_str == "0"){
-          ahead = true;
-       }
+
+       if(ahead_str.equals("A")){
+          ahead = true;//[送信先行:]
+          System.out.println("送信先行に設定されました。\n");
+              }
+       else if (ahead_str.equals("B")){
+          ahead = false;
+          System.out.println("受信先行に設定されました。\n");
+              }
        else{
           ahead = false;
-       }
+          System.out.println("不正な入力です。\n");
+          System.exit(0);
+              }
 
        InputStreamReader c = new InputStreamReader(System.in);
        System.out.print("portを設定します:");
