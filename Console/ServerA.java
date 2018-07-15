@@ -21,10 +21,7 @@ class ServerA{
        BufferedReader reader_host = new BufferedReader(i);
        String host = reader_host.readLine();
 
-       MultiThread7 mt = new MultiThread7();
-       //MultiThread8 lt = new MultiThread8();
-       Thread thread1 = new Thread(mt);
-       //Thread thread2 = new Thread(lt);
+       Thread thread1 = new Thread(new MultiThread7());
        thread1.start();
        //thread2.start();
       }
@@ -37,9 +34,6 @@ class ServerA{
 
 //送信先行のスレッド
 class MultiThread7 extends ServerA implements Runnable{
-
-        MultiThread7 port_int = new MultiThread7();
-        MultiThread7 host     = new MultiThread7();
 
         public void run(){
              while(true){
@@ -60,7 +54,7 @@ class MultiThread7 extends ServerA implements Runnable{
 
                      try{
                       //相手のIPアドレス,書かなくてもよい（クライアント側のみ）
-                          Socket mysocket = new Socket(host,port_int);
+                          Socket mysocket = new Socket("localhost",port_int);
                           BufferedReader in = new BufferedReader(new InputStreamReader(mysocket.getInputStream()));
                           String new_message = in.readLine();
                           System.out.print("受信したメッセージは"+ new_message + "です\n");
@@ -81,7 +75,7 @@ class MultiThread8 implements Runnable {
                       try{
                       //相手のIPアドレス,書かなくてもよい（クライアント側のみ）
                           ServerA valiable  = new ServerA();
-                          ServerSocket server = new ServerSocket(host,port_int);
+                          ServerSocket server = new ServerSocket("localhost",port_int);
                           BufferedReader in = new BufferedReader(new InputStreamReader(mysocket.getInputStream()));
                           String new_message = in.readLine();
                           System.out.print("受信したメッセージは"+ new_message + "です\n");
