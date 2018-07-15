@@ -7,7 +7,7 @@ class SendFirst extends Thread{
 	int port_int;
   boolean ahead;
   String data1 = "ずんずん";
-  String data2 = "どこどこ";
+  String data2 = "どこどこ ";
 
 	public SendFirst(String h,int p,boolean a){
 		host      = h;
