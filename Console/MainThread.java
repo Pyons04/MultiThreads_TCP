@@ -9,10 +9,12 @@ import java.lang.*;
 import java.io.*;
 import java.net.*;
 
+//GUIスレッド
    class Gui extends Thread implements ActionListener{
 
         static JTextField textfield;
-        static JTextArea textarea;
+        static JTextArea  textarea;
+ public static String     fieldInput;
 
    public void run() {
 
@@ -37,46 +39,49 @@ import java.net.*;
         panel.add(textfield);
         panel.add(textarea);
 
-        frame.setVisible(true);                             //windowを見せるor見せない。一番最後が良い（必須）
+        frame.setVisible(true);
+        fieldInput = "NoInput";                           //windowを見せるor見せない。一番最後が良い（必須）
 
         }
 
         public void actionPerformed(ActionEvent event){
-            String x = textfield.getText();
-            //int x=Integer.parseInt(t.getText());//文字でも数字に変換してくれるInterger.parsint
+            fieldInput = textfield.getText();
+            System.out.print( fieldInput + " と入力されました。");
             textfield.setText("");
         }
 
 }
 
-class Connection extends Thread{
-    String host;
-    int port_int;
-    boolean ahead;
-    String data1 = "ずんずん";
-    String data2 = "どこどこ ";
+//通信スレッド
+    class Connection extends Thread{
+        String host;
+        int port_int;
+        boolean ahead;
+        String data1 = "ずんずん";
+        String data2 = "どこどこ ";
 
-    public Connection(String h,int p,boolean a){
-        host      = h;
-        port_int  = p;
-        ahead     = a;
-    }
+        public Connection(String h,int p,boolean a){
+            host      = h;
+            port_int  = p;
+            ahead     = a;
+        }
 
-    public void run(){
-      while(true){
-        try{
-             Thread.sleep(3000);
-             System.out.println("MultiThreadingTest");
+        public void run(){
+          while(true){
+            try{
+                 Thread.sleep(3000);
+                 System.out.println("MultiThreadingTest Input : "+ Gui.fieldInput + "\n");
+               }
+            catch (Exception e){
+                 System.out.println("ConectionThreadでエラーが発生しています。");
+               }
            }
-        catch (Exception e){
-             System.out.println("ConectionThreadでエラーが発生しています。");
-           }
-      }
 
-    }
+        }
 }
 
 
+//事前設定用スレッド
 public class MainThread {
     public static void main(String args[]){
     Gui thread1;
