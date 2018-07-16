@@ -9,7 +9,7 @@ import java.lang.*;
 import java.io.*;
 import java.net.*;
 
-   class SendFirst extends Thread implements ActionListener{
+   class Gui extends Thread implements ActionListener{
 
         static JTextField textfield;
         static JTextArea textarea;
@@ -49,10 +49,39 @@ import java.net.*;
 
 }
 
+class Connection extends Thread{
+    String host;
+    int port_int;
+    boolean ahead;
+    String data1 = "ずんずん";
+    String data2 = "どこどこ ";
 
-public class Gui {
+    public Connection(String h,int p,boolean a){
+        host      = h;
+        port_int  = p;
+        ahead     = a;
+    }
+
+    public void run(){
+      while(true){
+        try{
+             Thread.sleep(3000);
+             System.out.println("MultiThreadingTest");
+           }
+        catch (Exception e){
+             System.out.println("ConectionThreadでエラーが発生しています。");
+           }
+      }
+
+    }
+}
+
+
+public class MainThread {
     public static void main(String args[]){
-        SendFirst thread1;
+    Gui thread1;
+    Connection thread2;
+
     int port_int;
     String host;
     boolean ahead;
@@ -101,8 +130,11 @@ public class Gui {
        System.exit(0);
        }
 
-        thread1 = new SendFirst();
+        thread1 = new Gui();
         thread1.start();
+
+        thread2 = new Connection(host,port_int,ahead);
+        thread2.start();
     }
 
 }
