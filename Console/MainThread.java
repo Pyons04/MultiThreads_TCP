@@ -4,17 +4,19 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.Dimension;
 import javax.swing.ButtonGroup;
+import javax.swing.SwingUtilities;
 //入出力・通信関係ライブラリ
 import java.lang.*;
 import java.io.*;
 import java.net.*;
 
 //GUIスレッド
+
    class Gui extends Thread implements ActionListener{
 
         static JTextField textfield;
-        static JTextArea  textarea;
- public static String     fieldInput;
+ public static JTextArea  textarea;
+ public static String     fieldInput;//共有変数
 
    public void run() {
 
@@ -32,6 +34,8 @@ import java.net.*;
         JTextArea textarea = new JTextArea();
         textarea.setPreferredSize(new Dimension(300, 200));
 
+        //textarea.addActionListener(this);//textareaにactionlisnaerを追加
+
         textfield = new JTextField(30);
         textfield.addActionListener(this);//TextFiledにアクションリスナー
         panel.setLayout(new FlowLayout());
@@ -40,13 +44,14 @@ import java.net.*;
         panel.add(textarea);
 
         frame.setVisible(true);
-        fieldInput = "NoInput";                           //windowを見せるor見せない。一番最後が良い（必須）
+        fieldInput = "NoInput";
+        textarea.setText("TextFieldのInput\n");
 
         }
 
         public void actionPerformed(ActionEvent event){
             fieldInput = textfield.getText();
-            System.out.print( fieldInput + " と入力されました。");
+            //System.out.print( fieldInput + " と入力されました。");
             textfield.setText("");
         }
 
@@ -57,8 +62,6 @@ import java.net.*;
         String host;
         int port_int;
         boolean ahead;
-        String data1 = "ずんずん";
-        String data2 = "どこどこ ";
 
         public Connection(String h,int p,boolean a){
             host      = h;
@@ -71,10 +74,12 @@ import java.net.*;
             try{
                  Thread.sleep(3000);
                  System.out.println("MultiThreadingTest Input : "+ Gui.fieldInput + "\n");
+                 Gui.fieldInput = "NoInput";
                }
             catch (Exception e){
                  System.out.println("ConectionThreadでエラーが発生しています。");
                }
+            //Gui.textarea.setText("ConnecctionThreadからGuiThreadへの反映");
            }
 
         }
