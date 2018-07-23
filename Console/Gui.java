@@ -7,13 +7,13 @@ import java.awt.Dimension;
 import javax.swing.ButtonGroup;
 import javax.swing.SwingUtilities;
 
-public class Monologue2 {
+public class Gui {
 
         static JTextField textfield;
  public static JTextArea  textarea;
  public static String     fieldInput;
 
-    public Monologue2() {
+    public Gui() {
 
         JFrame frame = new JFrame("TCP/IP Chat");            //上部のタイトル
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//閉じるボタンを押すとプログラムを自動で終了する。
@@ -42,21 +42,18 @@ public class Monologue2 {
         fieldInput = "NoInput";
         textarea.setText("TextFieldのInput\n");
 
-        // SwingWorkerを生成し，実行する
-        SwingWorker worker = new LongTaskWorker(textarea);
+        SwingWorker worker = new DetectInput(textarea);
         worker.execute();
     }
 
-    // 非同期に行う処理を記述するためのクラス
-    class LongTaskWorker extends SwingWorker<Object, Object> {
+    //無限ループで受信した文字列を監視し、InputがあればGUIスレッドに反映
+    class DetectInput extends SwingWorker<Object, Object> {
         public JTextArea  textarea;
 
-        public LongTaskWorker(JTextArea textarea) {
+        public DetectInput(JTextArea textarea) {
             this.textarea = textarea;
         }
 
-        // 非同期に行われる処理
-        //@Override
         public Object doInBackground() {
             while(true){
             try {
@@ -65,7 +62,6 @@ public class Monologue2 {
                 }
             catch (Exception e) {System.out.println("doInBackgroundでエラーが発生しています。");}
             }
-            //return null;
       }
 
     }
@@ -73,7 +69,7 @@ public class Monologue2 {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new Monologue2();
+                new Gui();
             }
         });
     }

@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.awt.Dimension;
 import javax.swing.ButtonGroup;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 //入出力・通信関係ライブラリ
 import java.lang.*;
 import java.io.*;
@@ -47,6 +48,9 @@ import java.net.*;
         fieldInput = "NoInput";
         textarea.setText("TextFieldのInput\n");
 
+        SwingWorker worker = new DetectInput(textarea);
+        worker.execute();
+
         }
 
         public void actionPerformed(ActionEvent event){
@@ -55,13 +59,40 @@ import java.net.*;
             textfield.setText("");
         }
 
+    //無限ループで受信した文字列を監視し、InputがあればGUIスレッドに反映
+    class DetectInput extends SwingWorker<Object, Object> {
+        public JTextArea  textarea;
+
+        public DetectInput(JTextArea textarea) {
+            this.textarea = textarea;
+        }
+
+        public Object doInBackground() {
+            while(true){
+                if (Connection.incoming.equals("むしむし")){
+                  textarea.append(Connection.incoming + "\n");
+                }
+            }
+      }
+
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new Gui();
+            }
+        });
+    }
+
 }
 
 //通信スレッド
     class Connection extends Thread{
-        String host;
-        int port_int;
-        boolean ahead;
+               String  host;
+               int     port_int;
+               boolean ahead;
+ public static String  incoming;
 
         public Connection(String h,int p,boolean a){
             host      = h;
@@ -72,6 +103,9 @@ import java.net.*;
         public void run(){
           while(true){
             try{
+                 incoming = "むしむし";
+                 Thread.sleep(3000);
+                 incoming = "でんでん";
                  Thread.sleep(3000);
                  System.out.println("MultiThreadingTest Input : "+ Gui.fieldInput + "\n");
                  Gui.fieldInput = "NoInput";
@@ -79,10 +113,7 @@ import java.net.*;
             catch (Exception e){
                  System.out.println("ConectionThreadでエラーが発生しています。");
                }
-            //Gui.textarea.setText("ConnecctionThreadからGuiThreadへの反映");
-            // SwingUtilities.invokeLater(new Runnable() {
-            //  public void run() {Gui.textarea.setText("ConnecctionThreadからGuiThreadへの反映");}
-            //  });
+
            }
 
         }
