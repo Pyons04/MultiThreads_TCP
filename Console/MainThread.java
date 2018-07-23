@@ -15,9 +15,10 @@ import java.net.*;
 
    class Gui extends Thread implements ActionListener{
 
-        static JTextField textfield;
- public static JTextArea  textarea;
- public static String     fieldInput;//共有変数
+        static JTextField  textfield;
+ public static JTextArea   textarea;
+ public static String      fieldInput;//共有変数
+ public static JScrollPane scrollpane;
 
    public void run() {
 
@@ -34,15 +35,17 @@ import java.net.*;
 
         JTextArea textarea = new JTextArea();
         textarea.setPreferredSize(new Dimension(300, 200));
+        JScrollPane scrollpane = new JScrollPane(textarea);
+        scrollpane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-        //textarea.addActionListener(this);//textareaにactionlisnaerを追加
+        //textfield.addActionListener(this);//textareaにactionlisnaerを追加
 
         textfield = new JTextField(30);
         textfield.addActionListener(this);//TextFiledにアクションリスナー
         panel.setLayout(new FlowLayout());
 
         panel.add(textfield);
-        panel.add(textarea);
+        panel.add(scrollpane);
 
         frame.setVisible(true);
         fieldInput = "NoInput";
@@ -68,9 +71,12 @@ import java.net.*;
         }
 
         public Object doInBackground() {
+
             while(true){
-                if (Connection.incoming.equals("むしむし")){
+                System.out.print("Connectionスレッドのincoming変数は:"+Connection.incoming+"です\n");
+                if (!(Connection.incoming.equals("NoInput"))) {
                   textarea.append(Connection.incoming + "\n");
+                  Connection.incoming = "NoInput";
                 }
             }
       }
@@ -101,22 +107,88 @@ import java.net.*;
         }
 
         public void run(){
+
+          if(ahead == true){
           while(true){
-            try{
-                 incoming = "むしむし";
-                 Thread.sleep(3000);
-                 incoming = "でんでん";
-                 Thread.sleep(3000);
-                 System.out.println("MultiThreadingTest Input : "+ Gui.fieldInput + "\n");
-                 Gui.fieldInput = "NoInput";
-                }
-            catch (Exception e){
-                 System.out.println("ConectionThreadでエラーが発生しています。");
+                   try{
+                        System.out.print("[送信先行:]サーバーとクライアントの接続を待機しています\n");
+                        ServerSocket srvr=new ServerSocket(port_int);
+                        Socket skt=srvr.accept();//接続するまでここで止まる
+                        System.out.print("[送信先行:]サーバーとクライアントの接続を構築しました\n");
+                        PrintWriter out=new PrintWriter(skt.getOutputStream(),true);//メッセージを送信
+                        System.out.print("[送信先行:]送信されたメッセージは"+Gui.fieldInput+"です\n");
+                        out.print(Gui.fieldInput);
+                        Gui.fieldInput = "NoInput";
+                        out.close();
+                        skt.close();
+                        srvr.close();
+                      }
+
+                    catch(Exception e){
+                        System.out.print("[送信先行:]受信用tryで例外が発生しています。\n");
+                      }
+
+                     try{
+                          Socket mysocket = new Socket(host,port_int);//相手のIPアドレス,書かなくてもよい（クライアント側のみ）
+                          BufferedReader in = new BufferedReader(new InputStreamReader(mysocket.getInputStream()));//inはサーバーから受信するためのメソッド
+
+                          System.out.print("[送信先行:]受信したメッセージ:");
+                          while(!in.ready()){}
+                          incoming = in.readLine();
+                          System.out.println(incoming);
+                          System.out.print("\n");
+                          in.close();
+                        }
+
+                   catch(Exception e){
+                        System.out.print("[送信先行:]受信用tryで例外が発生しています。\n");
+                        }
+
+                     }
+                    }
+
+   else{
+          while(true){
+                     try{
+                          Socket mysocket = new Socket(host,port_int);//相手のIPアドレス,書かなくてもよい（クライアント側のみ）
+                          BufferedReader in = new BufferedReader(new InputStreamReader(mysocket.getInputStream()));//inはサーバーから受信するためのメソッド
+
+                         System.out.print("[受信先行:]受信したメッセージ:");
+                         while(!in.ready()){}
+                         incoming = in.readLine();
+                         System.out.println(incoming);
+                         System.out.print("\n");
+                         in.close();
+                        }
+
+                   catch(Exception e){
+                        System.out.print("[受信先行:]受信用tryで例外が発生しています。\n");
+                        }
+
+                   try{
+                        System.out.print("[受信先行:]サーバーとクライアントの接続を待機しています\n");
+                        ServerSocket srvr=new ServerSocket(port_int);
+                        Socket skt=srvr.accept();//接続するまでここで止まる
+                        System.out.print("[受信先行:]サーバーとクライアントの接続を構築しました\n");
+                        PrintWriter out=new PrintWriter(skt.getOutputStream(),true);//メッセージを送信
+                        System.out.print("[受信先行:]送信されたメッセージは"+Gui.fieldInput+"です\n");
+                        out.print(Gui.fieldInput);
+                        Gui.fieldInput = "NoInput";
+                        out.close();
+                        skt.close();
+                        srvr.close();
+                      }
+
+                    catch(Exception e){
+                        System.out.print("[受信先行:]送信用tryで例外が発生しています。\n");
+                      }
+
+                     }
+        }
+                 //System.out.print("MultiThreadingTest Input : "+ Gui.fieldInput + "\n");
+                 //Gui.fieldInput = "NoInput";
                }
 
-           }
-
-        }
 }
 
 
