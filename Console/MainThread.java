@@ -75,11 +75,14 @@ import java.net.*;
                  Thread.sleep(3000);
                  System.out.println("MultiThreadingTest Input : "+ Gui.fieldInput + "\n");
                  Gui.fieldInput = "NoInput";
-               }
+                }
             catch (Exception e){
                  System.out.println("ConectionThreadでエラーが発生しています。");
                }
             //Gui.textarea.setText("ConnecctionThreadからGuiThreadへの反映");
+            // SwingUtilities.invokeLater(new Runnable() {
+            //  public void run() {Gui.textarea.setText("ConnecctionThreadからGuiThreadへの反映");}
+            //  });
            }
 
         }
